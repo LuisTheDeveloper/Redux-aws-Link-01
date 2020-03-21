@@ -1,20 +1,21 @@
 import C from './constants'
 import appReducer from './store/reducers'
-import initialState from './initialState.json'
 import { createStore } from 'redux'
 
 const store = createStore(appReducer)
 
-console.log('initial state', store.getState())
+const unsubscribeGoalLogger = store.subscribe(
+	() => console.log(' Goal: ${store.getState().goal}')
+)
 
-store.dispatch({
-	type: C.ADD_DAY,
-	payload: {
-		"resort": "Mt Shasta",
-		"date": "2016-10-28",
-		"powder": false,
-		"backcountry": true
-	}
-})
+setInterval(() => {
 
-console.log('next state', store.getState())
+	store.dispatch({
+		type: C.SET_GOAL,
+		payload: Math.floor(Math.random() * 100)
+	})
+}, 250)
+
+setTimeout(() => {
+	unsubscribeGoalLogger();
+}, 3000)
