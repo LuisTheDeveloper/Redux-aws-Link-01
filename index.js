@@ -1,56 +1,62 @@
-import C from './constants'
-
-// import our function that we use to create stores - storeFactory is an optional name you can call whatever you want
-// there is an index file under store folder all we need is to add the folder to the import command line.
+import expect from 'expect'
 import storeFactory from './store'
 
-// load initialState from local storage: to include on the store we create
-const initialState = (localStorage['redux-store']) ?
-	JSON.parse(localStorage['redux-store']) :
-	{}
+import { 
+	addError,
+	clearError, 
+	changeSuggestions, 
+	clearSuggestions 
+} from './actions'
 
-// save state to localStorage: to include on the store we create
-const saveState = () => {
-	const state = JSON.stringify(store.getState())
-	localStorage['redux-store'] = state 
-}
+const store = storeFactory()
 
-// We can create a new store based on our storeFactory, optional initialState
-// load initialStage from localstorage
-const store = storeFactory(initialState)
+store.dispatch(
+    addError("something went wrong")
+)
 
-// Now that we have a store we can use our subscribe method to our store
-// subscribe the savestate method to our store
-// every time we dispatch an action it will save our state 
-// the store has MIDDLEWARE associated with it will log console groups for each action that's being dispatched
-store.subscribe(saveState)
+expect(store.getState().errors)
+  .toEqual(["something went wrong"])
 
-store.dispatch({
-	type: C.ADD_DAY,
-	payload: {
-		"resort": "Mt Shasta",
-		"date": "2016-10-28",
-		"powder": true,
-		"backcountry": true	
-	}
-})
+console.log(`
 
-store.dispatch({
-	type: C.ADD_DAY,
-	payload: {
-		"resort": "Mt Everest",
-		"date": "2016-3-28",
-		"powder": true,
-		"backcountry": false	
-	}
-})
+    addError() Action Creator Works!!!
 
-store.dispatch({
-	type: C.ADD_DAY,
-	payload: {
-		"resort": "Lion Sierra",
-		"date": "2016-12-15",
-		"powder": false,
-		"backcountry": true	
-	}
-})
+`)
+
+store.dispatch(
+    clearError(0)
+)
+
+expect(store.getState().errors)
+  .toEqual([])
+
+console.log(`
+
+    clearError() Action Creator Works!!!
+
+`)
+
+
+store.dispatch(
+    changeSuggestions(['One', 'Two', 'Three'])
+)
+      
+expect(store.getState().resortNames.suggestions)
+    .toEqual(['One', 'Two', 'Three'])
+
+console.log(`
+
+    changeSuggestions() Action Creator Works!!!
+
+`)
+
+store.dispatch(clearSuggestions())
+
+expect(store.getState().resortNames.suggestions).toEqual([])
+        
+console.log(`
+
+    clearSuggestions() Action Creator Works!!!
+
+`)  
+
