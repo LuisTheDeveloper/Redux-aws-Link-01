@@ -1,5 +1,5 @@
 import C from './constants'
-import { suggestions } from './store/reducers'
+import fetch from 'isomorphic-fetch'
 
 export function addDay(resort, date, powder=false, backcountry=false) {
 
@@ -10,61 +10,78 @@ export function addDay(resort, date, powder=false, backcountry=false) {
 
 }
 
-export const addError = (message) => 
-    ({
-        type: C.ADD_ERROR,
-        payload: message
-    })
-
-export const clearError = index =>
-    ({
-        type: C.CLEAR_ERROR,
-        payload: index
-
-    })
-
-export const changeSuggestions = suggestions =>
-    ({
-        type: C.CHANGE_SUGGESTIONS,
-        payload: suggestions
-    })
-
-export const clearSuggestions = suggestions => ({
-        type: C.CLEAR_SUGGESTIONS,
-        payload: suggestions
-})
-
 export const removeDay = function(date) {
 
 	return {
 		type: C.REMOVE_DAY,
 		payload: date
-    }
+	}
+
 }
 
 export const setGoal = (goal) => 
 	({
 		type: C.SET_GOAL,
 		payload: goal
-    })
-    
-// This thunk is going to check the existing state of the store, 
-// if we are currently fetching resort names, it will not dispatch any action, 
-// else, it will dispatch an action for fetching the resort names, wait 1,5 seconds and cancel the fetching.
-export const randomGoals = () => (dispatch, getState) => {
+	})
 
-    if(!getState().resortNames.fetching){
+export const addError = (message) => 
+   ({
+   	  type: C.ADD_ERROR,
+   	  payload: message
+   })
 
-        dispatch({
-            type: C.FETCH_RESORT_NAMES
-        })
-    
-        setTimeout(() => {
-    
-            dispatch({
-                type: C.CANCEL_FETCHING
-            })
-        }, 1500)
+export const clearError = index => 
+	({
+		type: C.CLEAR_ERROR,
+		payload: index
+	})   
 
-    }
+export const changeSuggestions = suggestions => 
+  ({
+  	type: C.CHANGE_SUGGESTIONS,
+  	payload: suggestions
+  })
+
+export const clearSuggestions = () => 
+	({
+		type: C.CLEAR_SUGGESTIONS
+	})
+
+export const suggestResortNames = value => dispatch => {
+
+	dispatch({
+		type: C.FETCH_RESORT_NAMES
+	})
+
+	fetch('http://18.221.145.57:3333/resorts/' + value)
+		.then(response => response.json())
+		.then(suggestions => {
+
+			dispatch({
+				type: C.CHANGE_SUGGESTIONS,
+				payload: suggestions
+			})
+
+		})
+		.catch(error => {
+
+			dispatch(
+				addError(error.message)
+			)
+
+			dispatch({
+				type: C.CANCEL_FETCHING
+			})
+
+		})
+
 }
+
+
+
+
+
+
+
+
