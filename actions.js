@@ -46,4 +46,25 @@ export const setGoal = (goal) =>
 	({
 		type: C.SET_GOAL,
 		payload: goal
-	})
+    })
+    
+// This thunk is going to check the existing state of the store, 
+// if we are currently fetching resort names, it will not dispatch any action, 
+// else, it will dispatch an action for fetching the resort names, wait 1,5 seconds and cancel the fetching.
+export const randomGoals = () => (dispatch, getState) => {
+
+    if(!getState().resortNames.fetching){
+
+        dispatch({
+            type: C.FETCH_RESORT_NAMES
+        })
+    
+        setTimeout(() => {
+    
+            dispatch({
+                type: C.CANCEL_FETCHING
+            })
+        }, 1500)
+
+    }
+}

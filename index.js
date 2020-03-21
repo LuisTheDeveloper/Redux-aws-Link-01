@@ -1,5 +1,6 @@
 import expect from 'expect'
 import storeFactory from './store'
+import { randomGoals } from './actions'
 
 import { 
 	addError,
@@ -60,3 +61,10 @@ console.log(`
 
 `)  
 
+store.dispatch(
+	randomGoals()
+)
+
+store.dispatch(
+	randomGoals()
+)
